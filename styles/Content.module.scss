@@ -1,0 +1,17 @@
+.element {
+  color: #eee;
+  margin-bottom: 50px;
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  a {
+    color: #ccc;
+  }
+  strong {
+    font-size: 20px;
+  }
+}
+.description {
+  color: #eee;
+}
