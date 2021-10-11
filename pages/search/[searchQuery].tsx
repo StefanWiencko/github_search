@@ -1,41 +1,30 @@
 import { GetServerSideProps } from "next";
+import Head from "next/head";
 import Content from "../../components/Content";
 import { GraphQLClient } from "graphql-request";
-import { personalAccessToken, getReposQuery } from "../../graphql/query";
-import { Node, Data } from "../../types/types";
+import {
+  githubAuthenticationToken,
+  searchResolutsQuery,
+} from "../../graphql/query";
+import { PropsData, Data } from "../../types/types";
 import styles from "../../styles/SearchResoluts.module.scss";
 import SearchForm from "../../components/SearchForm";
 import { useRouter } from "next/router";
-import { useState, ChangeEvent, FormEvent } from "react";
-type PropsData = [{ cursor: string; node: Node }];
 type Props = {
   repositoryCount: number;
   data: PropsData;
 };
 const SearchResoluts = (props: Props) => {
-  const [inputValue, setInputValue] = useState("");
   const router = useRouter();
-  const changeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.currentTarget.value);
-  };
-  const submitHandler = (event: FormEvent) => {
-    event.preventDefault();
-    router.push(
-      {
-        pathname: "/search/[search]",
-        query: { search: inputValue },
-      },
-      undefined,
-      { shallow: true }
-    );
-  };
+  const { searchQuery } = router.query;
   return (
     <main>
+      <Head>
+        <title>{searchQuery} - Github Search</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <header className={styles.header}>
-        <SearchForm
-          changeHandler={changeHandler}
-          submitHandler={submitHandler}
-        />
+        <SearchForm />
       </header>
       <section className={styles.section}>
         <Content data={props.data} repositoryCount={props.repositoryCount} />
@@ -58,9 +47,13 @@ export const getServerSideProps: GetServerSideProps = async ({
   const variables = { name: searchQuery };
   const headers = {
     "Content-Type": "application/json",
-    Authorization: `bearer ${personalAccessToken}`,
+    Authorization: `bearer ${githubAuthenticationToken}`,
   };
-  const res: Data = await client.request(getReposQuery, variables, headers);
+  const res: Data = await client.request(
+    searchResolutsQuery,
+    variables,
+    headers
+  );
   return {
     props: {
       repositoryCount: res.search.repositoryCount,

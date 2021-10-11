@@ -1,14 +1,22 @@
-import { ChangeEventHandler, FormEventHandler } from "react";
+import { ChangeEvent, useState } from "react";
+import Link from "next/link";
 import styles from "../styles/SearchForm.module.scss";
 import { HiOutlineSearch } from "react-icons/hi";
-type Props = {
-  changeHandler: ChangeEventHandler;
-  submitHandler: FormEventHandler;
-};
-const SearchForm = ({ changeHandler, submitHandler }: Props) => {
+
+const SearchForm = () => {
+  const [inputValue, setInputValue] = useState("");
+  const changeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.currentTarget.value);
+  };
   return (
-    <form className={styles.form} onSubmit={submitHandler}>
-      <h1 className={styles.h1}>Search for your Github repository:</h1>
+    <form
+      className={styles.form}
+      action={`/search/${inputValue}`}
+      method="POST"
+    >
+      <Link href="/">
+        <a className={styles.a}>Search for your Github repository:</a>
+      </Link>
 
       <input
         type="text"

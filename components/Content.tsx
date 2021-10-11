@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { Node, Data } from "../types/types";
-import { personalAccessToken, getReposQuery } from "../graphql/query";
+import { PropsData, Data } from "../types/types";
+import {
+  githubAuthenticationToken,
+  searchResolutsQuery,
+} from "../graphql/query";
 import { GraphQLClient } from "graphql-request";
 import { useRouter } from "next/router";
 import styles from "../styles/Content.module.scss";
-type PropsData = { cursor: string; node: Node }[];
 type Props = {
   repositoryCount: number;
   data: PropsData;
@@ -21,19 +23,22 @@ const Content = ({ data, repositoryCount }: Props) => {
     const client = new GraphQLClient("https://api.github.com/graphql");
     const headers = {
       "Content-Type": "application/json",
-      Authorization: `bearer ${personalAccessToken}`,
+      Authorization: `bearer ${githubAuthenticationToken}`,
     };
     const variables = { name: searchQuery, after: lastResolut.cursor };
-    const data: Data = await client.request(getReposQuery, variables, headers);
+    const data: Data = await client.request(
+      searchResolutsQuery,
+      variables,
+      headers
+    );
     const newResoluts = data.search.edges;
     setSearchResoluts(() => [...searchResoluts, ...newResoluts]);
     if (searchResoluts.length === repositoryCount) {
       setHasMore(false);
     }
-    console.log(searchResoluts);
   };
   if (searchResoluts.length === 0) {
-    return <h3>No resoluts found</h3>;
+    return <h2 className={styles.message}>No resoluts found</h2>;
   }
 
   return (
@@ -42,18 +47,21 @@ const Content = ({ data, repositoryCount }: Props) => {
         dataLength={searchResoluts.length}
         next={getMoreResoluts}
         hasMore={hasMore}
-        loader={<h3> Loading...</h3>}
-        endMessage={<h4>Nothing more to show</h4>}
+        loader={<h3 className={styles.message}> Loading...</h3>}
+        endMessage={<h4 className={styles.message}>Nothing more to show</h4>}
       >
         {searchResoluts.map((data) => (
-          <div className={styles.element} key={data.node.id}>
-            <a href={data.node.url}>
-              <div className={styles.content}>
-                <a>{data.node.url}</a>
-                <strong> {data.node.name}</strong>
-              </div>
-              <p className={styles.description}>{data.node.description}</p>
-            </a>
+          <div
+            onClick={() => router.push(data.node.url)}
+            className={styles.element}
+            key={data.node.id}
+          >
+            <div className={styles.content}>
+              <a href={data.node.url}>{data.node.url}</a>
+
+              <strong> {data.node.name}</strong>
+            </div>
+            <p className={styles.description}>{data.node.description}</p>
           </div>
         ))}
       </InfiniteScroll>

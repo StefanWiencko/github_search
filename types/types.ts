@@ -3,16 +3,14 @@ export type Node = {
   name: string;
   description: string;
   id: string;
-  createdAT: string;
 };
 export type Data = {
   search: {
-    edges: [
-      {
-        cursor: string;
-        node: Node;
-      }
-    ];
+    edges: {
+      cursor: string;
+      node: Node;
+    }[];
     repositoryCount: number;
   };
 };
+export type PropsData = { cursor: string; node: Node }[];
