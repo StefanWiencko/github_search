@@ -1,19 +1,21 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import styles from "../styles/SearchForm.module.scss";
 import { HiOutlineSearch } from "react-icons/hi";
 
 const SearchForm = () => {
   const [inputValue, setInputValue] = useState("");
+  const router = useRouter();
   const changeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.currentTarget.value);
   };
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    router.push(`/search/${inputValue}`);
+  };
   return (
-    <form
-      className={styles.form}
-      action={`/search/${inputValue}`}
-      method="POST"
-    >
+    <form name="searchbox" className={styles.form} onSubmit={onSubmit}>
       <Link href="/">
         <a className={styles.a}>Search for your Github repository:</a>
       </Link>
@@ -24,8 +26,10 @@ const SearchForm = () => {
         placeholder="Min 3 characters"
         onChange={changeHandler}
         className={styles.input}
+        id="searchbox"
+        required
       />
-      <input type="submit" value="" className={styles.submit} />
+      <input type="submit" name="submit" value="" className={styles.submit} />
       <HiOutlineSearch className={styles.icon} />
     </form>
   );

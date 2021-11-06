@@ -61,7 +61,9 @@ const Content = ({ data, repositoryCount }: Props) => {
 
               <strong> {data.node.name}</strong>
             </div>
-            <p className={styles.description}>{data.node.description}</p>
+            <p role="description" className={styles.description}>
+              {data.node.description}
+            </p>
           </div>
         ))}
       </InfiniteScroll>
